@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project  basedir="." default="sonar" xmlns:sonar="antlib:org.sonar.ant"
+	name="Junit-Cobertura_ClaimAdjudicationBatchProcessEJB">
+
+	<!-- Project properties -->
+
+
+	<property name="work.dir" value="/build/Ant_Builds/build/Junit_Cobertura" />
+
+	<property name="libs.dir" value="${work.dir}/libs" />
+
+	<property name="LIB.dir" value="/build/Ant_Builds/build/LIB_NH4.0" />
+
+	<property name="src.dir"
+		value="/var/lib/jenkins/workspace/Junit_Codebase/operations/claimadjudication/ClaimAdjudicationBatchProcessEJB/ejbModule" />
+
+	<property name="test.dir"
+		value="/var/lib/jenkins/workspace/Junit_Codebase/operations/claimadjudication/ClaimAdjudicationBatchProcessEJB/test" />
+
+	<property name="release.dir"
+		value="/build/Ant_Builds/build/Junit_Cobertura/release" />
+
+	<property name="target.dir"
+		value="${work.dir}/operations/claimadjudication/ClaimAdjudicationBatchProcessEJB/target" />
+
+	<property name="classes.dir" value="${target.dir}/classes" />
+
+	<property name="instrumentedclasses.dir" value="${target.dir}/instrumentedclasses" />
+
+	<property name="testclasses.dir" value="${target.dir}/testclasses" />
+
+	<!--<property name="config.dir" value="config" /> -->
+
+
+	<property name="reports.dir" value="${target.dir}/reports" />
+
+	<property name="junit.reports.dir" value="${reports.dir}/junit" />
+
+	<property name="cobertura.reports.dir" value="${reports.dir}/cobertura" />
+
+	<property name="project.name" value="${ant.project.name}" />
+
+	<property name="cobertura.ser.file" location="cobertura.ser" />
+
+	<!-- <property name="java.compiler" value="/opt1/app/IBM/PS/v8.5/java/bin/javac" 
+		/> <property name="ant.test.javac.source" value="1.6"/> <property name="ant.test.javac.target" 
+		value="1.6"/> <property name="ant.source.javac.source" value="1.7"/> -->
+
+
+	<property name="ant.build.javac.source" value="1.7" />
+
+	<property name="ant.build.javac.test" value="1.7" />
+
+	<!-- Properties for MYSQL DB -->
+
+
+	<property name="sonar.jdbc.url"
+		value="jdbc:mysql://10.234.232.252:3306/sonar?useUnicode=true&characterEncoding=utf8" />
+
+	<property name="sonar.jdbc.driverClassName" value="com.mysql.jdbc.Driver" />
+
+	<property name="sonar.jdbc.username" value="sonar" />
+
+	<property name="sonar.jdbc.password" value="sonar" />
+
+	<!-- list of properties for sonar -->
+
+
+	<property name="sonar.host.url" value="http://10.234.232.252:9000" />
+
+	<property name="sonar.projectKey" value="${project.name}" />
+
+	<property name="sonar.projectName" value="${project.name} Project." />
+
+	<property name="sonar.projectVersion" value="SNAPSHOT_1.0" />
+
+	<property name="sonar.language" value="java" />
+
+	<property name="sonar.sources" value="${src.dir}" />
+
+	<property name="sonar.tests" value="${test.dir}" />
+
+	<property name="sonar.binaries" value="${classes.dir}" />
+
+	<!--<property name="sonar.surefire.reportsPath" value="${junit.reports.dir}" 
+		/> -->
+
+
+	<property name="sonar.dynamicAnalysis" value="reuseReports" />
+
+	<property name="sonar.junit.reportsPath" value="${junit.reports.dir}" />
+
+	<property name="sonar.java.coveragePlugin" value="cobertura" />
+
+	<property name="sonar.cobertura.reportPath" value="${cobertura.reports.dir}/coverage.xml" />
+
+	<!-- paths -->
+
+
+
+	-
+	<path description="classpath for compiling sources" id="src.compile.classpath">
+
+		<!-- <pathelement location="${libs.dir}/log4j-1.2.9.jar" /> -->
+
+
+
+		-
+		<fileset dir="${LIB.dir}">
+
+			<include name="**/*.jar" />
+
+		</fileset>
+
+
+		-
+		<fileset dir="${release.dir}">
+
+			<include name="**/*.jar" />
+
+		</fileset>
+
+	</path>
+
+
+	-
+	<path description="classpath for compiling test-sources" id="test.compile.classpath">
+
+		<pathelement location="${classes.dir}" />
+
+		<pathelement location="${libs.dir}/junit-4.11.jar" />
+
+
+		-
+		<fileset dir="${libs.dir}/junit">
+
+			<include name="**/*.jar" />
+
+		</fileset>
+
+
+		-
+		<fileset dir="${LIB.dir}">
+
+			<include name="**/*.jar" />
+
+		</fileset>
+
+
+		-
+		<fileset dir="${release.dir}">
+
+			<include name="**/*.jar" />
+
+		</fileset>
+
+	</path>
+
+	<!-- for junit-run with cobertura we use the instrumented classes -->
+
+
+
+	-
+	<path description="classpath for running junit-tests" id="test.runtime.classpath">
+
+		<pathelement location="${libs.dir}/junit-4.11.jar" />
+
+		<pathelement location="${instrumentedclasses.dir}" />
+
+		<pathelement location="${classes.dir}" />
+
+		<pathelement location="${testclasses.dir}" />
+
+		<!--<pathelement location="${config.dir}" /> -->
+
+
+		<!-- <pathelement location="${libs.dir}/org.hamcrest.core_1.3*.jar" /> -->
+
+
+		<!--<pathelement location="${libs.dir}/log4j-1.2.9.jar" /> -->
+
+
+
+		-
+		<fileset dir="${libs.dir}/junit">
+
+			<include name="**/*.jar" />
+
+		</fileset>
+
+
+		-
+		<fileset dir="${LIB.dir}">
+
+			<include name="**/*.jar" />
+
+		</fileset>
+
+
+		-
+		<fileset dir="${release.dir}">
+
+			<include name="**/*.jar" />
+
+		</fileset>
+
+	</path>
+
+
+	-
+	<path description="classpath for instrumenting classes" id="cobertura.classpath">
+
+		<pathelement location="${libs.dir}/cobertura-1.9.4.1.jar" />
+
+
+		-
+		<fileset dir="${libs.dir}">
+
+			<include name="cobertura-dependencies/*.jar" />
+
+		</fileset>
+
+	</path>
+
+	<!-- taskdefs -->
+
+
+	<taskdef resource="tasks.properties" classpathref="cobertura.classpath" />
+
+	<taskdef resource="org/sonar/ant/antlib.xml" uri="antlib:org.sonar.ant" />
+
+	<!-- Targets: clean,prepare,compile.sources,instrument.classes,compile.tests,junit_test,sonar -->
+
+
+	<!-- clean the target directory -->
+
+
+	<echo message="clean: deleting the directories" />
+
+
+	-
+	<target name="clean" description="deleting the directories">
+
+		<!--<delete includeEmptyDirs="true" failonerror="false"> <fileset dir="${target.dir}" 
+			/> </delete> -->
+
+
+		<delete dir="${classes.dir}" />
+
+		<delete dir="${testclasses.dir}" />
+
+		<delete dir="${reports.dir}" />
+
+		<delete dir="${instrumentedclasses.dir}" />
+
+		<echo message="prepare: create the necessary directories" />
+
+	</target>
+
+	<!-- prepare the necessary folders -->
+
+
+
+	-
+	<target name="prepare"
+		description="creating the needed directories within target-directory"
+		depends="clean">
+
+		<mkdir dir="${classes.dir}" />
+
+		<mkdir dir="${testclasses.dir}" />
+
+		<mkdir dir="${reports.dir}" />
+
+		<mkdir dir="${junit.reports.dir}" />
+
+		<mkdir dir="${cobertura.reports.dir}" />
+
+		<mkdir dir="${instrumentedclasses.dir}" />
+
+		<echo message="compile.sources: compile all stuff in src-directory" />
+
+	</target>
+
+	<!-- compiling the sources -->
+
+
+
+	-
+	<target name="compile.sources" depends="prepare">
+
+
+		-
+		<javac destdir="${classes.dir}" srcdir="${src.dir}"
+			source="${ant.build.javac.source}" debuglevel="vars,lines,source"
+			debug="true">
+
+			<classpath refid="src.compile.classpath" />
+
+		</javac>
+
+		<echo
+			message="instrument.classes: instrument all compiled classes with coverage-markers" />
+
+	</target>
+
+	<!-- preparing cobertura-instrument classes by using source classes -->
+
+
+
+	-
+	<target name="instrument.classes" depends="compile.sources">
+
+		<delete file="cobertura.ser" />
+
+
+		-
+		<cobertura-instrument datafile="${cobertura.ser.file}"
+			todir="${instrumentedclasses.dir}">
+
+			<includeclasses regex=".*" />
+
+			<!--<ignore regex="org.apache.log4j.*" /> -->
+
+
+
+			-
+			<instrumentationClasspath>
+
+				<pathelement location="${classes.dir}" />
+
+			</instrumentationClasspath>
+
+			<fileset dir="${classes.dir}" />
+
+		</cobertura-instrument>
+
+		<echo message="compile.tests: compile all stuff in test-directory" />
+
+	</target>
+
+	<!-- compiling the test sources -->
+
+
+
+	-
+	<target name="compile.tests" depends="instrument.classes">
+
+		<javac classpathref="test.compile.classpath" destdir="${testclasses.dir}"
+			srcdir="${test.dir}" source="${ant.build.javac.test}"
+			includeantruntime="no" />
+
+		<!-- target="${java.compiler.target.version}" executable="${java.compiler}" 
+			source="${ant.build.javac.source}" -->
+
+
+		<echo
+			message="test: execute the junit-test and create junit and cobertura-reports" />
+
+	</target>
+
+	<!-- executing junit-test and creating junit-cobertura-reports -->
+
+
+
+	-
+	<target name="junit_test" description="run the unit-test"
+		depends="compile.tests">
+
+		<!--depends="compile.tests" -->
+
+
+		<!--<junit printsummary="yes" haltonfailure="no" showoutput="true"> -->
+
+
+
+		-
+		<junit showoutput="yes" forkmode="perTest" maxmemory="512m"
+			haltonfailure="no" printsummary="true">
+
+			<!--fork="true" forkmode="perTest" maxmemory="512m" -->
+
+
+			<!-- <jvmarg value="-XX:-UseSplitVerifier"/> -->
+
+
+			<jvmarg value="-Xverify:none" />
+
+			<!-- junit-specific -->
+
+
+			<formatter type="xml" />
+
+			<classpath refid="test.runtime.classpath" />
+
+
+			-
+			<batchtest todir="${junit.reports.dir}" fork="yes">
+
+
+				-
+				<fileset dir="${test.dir}">
+
+					<include name="**/Test*.java" />
+
+					<!--<exclude name="**/Context*.java" /> -->
+
+
+				</fileset>
+
+			</batchtest>
+
+			<!--<test name="com.acs.enterprise.common.claim.adjudication.view.bean.AllTests" 
+				/> -->
+
+
+			<!-- cobertura-specific -->
+
+
+			<sysproperty file="${cobertura.ser.file}" key="net.sourceforge.cobertura.datafile" />
+
+			<classpath refid="cobertura.classpath" />
+
+		</junit>
+
+		<!--<junitreport todir="${junit.reports.dir}"> <fileset dir="${junit.reports.dir}"> 
+			<include name="TEST-*.xml"/> </fileset> <report format="frames" todir="${junit.reports.dir}"/> 
+			</junitreport> -->
+
+
+		<!--<copy file="TEST-com.acs.enterprise.common.claim.adjudication.view.bean.AllTests.xml" 
+			todir="${junit.reports.dir}" /> <delete file="TEST-com.acs.enterprise.common.claim.adjudication.view.bean.AllTests.xml"/> -->
+
+
+		<cobertura-report destdir="${cobertura.reports.dir}"
+			srcdir="${src.dir}" datafile="${cobertura.ser.file}" format="xml" />
+
+		<echo message="sonar: put all stuff from coverage into sonar" />
+
+	</target>
+
+
+	-
+	<target name="sonar" description="run the unit-test" depends="junit_test">
+
+		<!-- depends="junit_test" -->
+
+
+		<sonar:sonar />
+
+	</target>
+
+</project>
