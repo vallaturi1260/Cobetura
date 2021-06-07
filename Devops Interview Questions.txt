@@ -1,0 +1,53 @@
+ANT  -  https://www.wisdomjobs.com/e-university/apache-ant-interview-questions.html  
+meet.google.com/ndj-pvpm-cjz  
+https://get.jenkins.io/war-stable/2.204.4/
+https://www.jenkins.io/download/
+java -jar jenkins.war --httpPort=9090
+
+
+How to download Jenkins:
+https://www.jenkins.io/download/
+
+If you want to download pastrealease: .war
+https://get.jenkins.io/war-stable/
+
+If you want to download .msi file
+click on Windows OS
+
+
+How to set Jenkins server:
+
+We can setup Jenkins server there:
+
+1. Deploy Jenkins.war file into Tomcatcat<home>/webapps/
+
+2. Install Jenkins.msi 
+
+3. Run on portable: java -jar Jenkins.war --httpPort=9090
+
+How to install plugIn in Jenkins?
+-------------------------------------
+
+Goto Jenkins Homepage->Manage Jenkins -> Manage PlugIns -> Available(for new plugIn)
+
+Installed (if you want to see installed plugIn)
+
+search PlugIn name.
+
+
+How to set Java path in Jenkins:
+--------------------------------
+Goto Jenkins Homepage->Manage Jenkins ->Global Tool Configuration->JDK
+
+JDK Name: Java 1.8
+JAVA_HOME=C:\Program Files\Java\jdk1.8.0_101
+
+How to set Ant path in Jenkins:
+------------------------------
+Goto
+How to set Ant path in Jenkins:
+------------------------------
+Goto Jenkins Homepage->Manage Jenkins ->Global Tool Configuration->Ant
+
+Ant Name:Ant1.9
+ANT_HOME=H:\SCM_Material\apache-ant-1.9.9
