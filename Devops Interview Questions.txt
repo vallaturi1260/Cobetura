@@ -1,4 +1,5 @@
 ANT  -  https://www.wisdomjobs.com/e-university/apache-ant-interview-questions.html  
+https://www.youtube.com/watch?v=x6qQnLTVyTg&t=555s
 meet.google.com/ndj-pvpm-cjz  
 https://get.jenkins.io/war-stable/2.204.4/
 https://www.jenkins.io/download/
@@ -26,6 +27,12 @@ We can setup Jenkins server there:
 3. Run on portable: java -jar Jenkins.war --httpPort=9090
 
 How to install plugIn in Jenkins?
+
+
+
+
+Jenkins server
+https://archives.jenkins-ci.org/windows-stable/
 -------------------------------------
 
 Goto Jenkins Homepage->Manage Jenkins -> Manage PlugIns -> Available(for new plugIn)
@@ -51,3 +58,36 @@ Goto Jenkins Homepage->Manage Jenkins ->Global Tool Configuration->Ant
 
 Ant Name:Ant1.9
 ANT_HOME=H:\SCM_Material\apache-ant-1.9.9
+
+https://mobaxterm.mobatek.net/download-home-edition.html
+https://docs.sonarqube.org/   - sonar docs
+
+
+
+
+Markonda Reddy8:34 PM
+nginx
+Markonda Reddy9:41 PM
+Playbooks:
+---------
+vi play1.yaml
+---
+---
+- hosts: nodes
+  become: true
+  tasks:
+  - name: create a file
+    file:
+      dest: /home/ec2-user/ansible.txt
+      state: touch
+  - name: file change permission
+    file:
+      dest: /home/ec2-user/ansible.txt
+      mode: 0600
+  - name: write content into it
+    copy:
+      dest: /home/ec2-user/ansible.txt
+      content:
+        this is smaple.txt
+        welcome to devops
+        learning devops class

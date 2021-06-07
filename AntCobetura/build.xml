@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="AntCobetura" basedir="." default="coverage">
+
+	<!-- Test coverage properties -->
+	<property name="cobertura.dir" value="C:\Tools\cobertura-2.1.1" />
+	<property name="covertura.maxmemory" value="512m" />
+	<property name="test.coverage" value="true" />
+	<property name="instrumented.dir" value="instrumented" />
+	<property name="coverage.report.dir" value="coverage" />
+	<property name="coverage.report.xml.dir" value="${coverage.report.dir}/xml" />
+	<property name="coverage.report.html.dir" value="${coverage.report.dir}/html" />
+
+	<!-- Project properties -->
+	<property name="src.dir" value="src" />
+	<property name="build.dir" value="build/classes" />
+	<property name="WebContent.dir" value="WebContent" />
+	<property name="WebContent.dir" value="WebContent" />
+	<property name="lib.dir" value="${WebContent.dir}/WEB-INF/lib" />
+	<property name="dist.dir" value="dist" />
+	<property name="reports.dir" value="reports" />
+	<property name="htmlreports.dir" value="htmlrepots" />
+	
+	
+
+	<!-- added ant-contrib-1.0b3.jar for if condition -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+		<classpath>
+			<pathelement location="${WebContent.dir}/WEB-INF/lib/ant-contrib-1.0b3.jar" />
+		</classpath>
+	</taskdef>
+
+	<!--  Timestamp -->
+	<tstamp>
+		<format property="build.datetime" pattern="yyyy-MM-dd.HH.mm" />
+	</tstamp>
+	
+	<tstamp>
+		<format property="yesterday" pattern="yyyy-MM-dd" offset="-1" unit="day" />
+	    <format property="today" pattern="yyyy-MM-dd" unit="day" />
+	</tstamp>
+
+	<!-- cobetura classpath -->
+	<path id="cobertura.classpath">
+		<pathelement location="${WebContent.dir}/WEB-INF/lib/ant-contrib-1.0b3.jar" />
+		<fileset dir="${cobertura.dir}">
+			<include name="cobertura-2.1.1.jar" />
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	<taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
+
+	<path id="master-classpath">
+		<pathelement location="${build.dir}" />
+		<pathelement location="${WebContent.dir}/WEB-INF/lib/junit.jar" />
+		<fileset dir="${WebContent.dir}/WEB-INF/lib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<target name="clean" description="cleaning the project directories">
+		<delete>
+			<fileset dir="${dist.dir}">
+				<include name="*.war" />
+				<include name="*.jar" />
+			</fileset>
+		</delete>
+		<delete>
+			<fileset dir="${build.dir}">
+				<include name="*.class" />
+			</fileset>
+		</delete>
+		<delete dir="${reports.dir}" />
+		<delete dir="${htmlreports.dir}" />
+
+		<!-- coverage properties -->
+		<delete dir="${instrumented.dir}" />
+		<delete dir="${coverage.report.dir}" />
+		<delete file="cobertura.log" />
+		<delete file="cobertura.ser" />
+		<echo>cleaning is success</echo>
+		<echo message="${build.datetime}" />
+	</target>
+
+	<target name="prepare" depends="clean" description="Creating project directories">
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${dist.dir}" />
+		<mkdir dir="${reports.dir}" />
+		<mkdir dir="${htmlreports.dir}" />
+		<!-- coverage properties -->
+		<mkdir dir="${instrumented.dir}" />
+		<mkdir dir="${coverage.report.dir}" />
+		<mkdir dir="${coverage.report.html.dir}" />
+		<mkdir dir="${coverage.report.xml.dir}" />
+		<echo>Directories are created</echo>
+		<echo message="${build.datetime}" />
+	</target>
+
+	<target name="compile" depends="prepare" description="compiling the java source code">
+		<javac includeantruntime="false" destdir="${build.dir}" srcdir="${src.dir}" source="1.8" target="1.8" debug="true">
+			<classpath refid="master-classpath" />
+			<classpath refid="cobertura.classpath" />
+		</javac>
+		<echo>Compilation is success</echo>
+		<echo message="${build.datetime}" />
+	</target>
+
+	<target name="jar" depends="compile" description="Preparing jar file">
+		<jar destfile="${dist.dir}/${ant.project.name}.jar" basedir="${build.dir}">
+			<include name="**/*.class" />
+			<include name="**/*Test.class" />
+			<manifest>
+				<attribute name="Main-Class" value="com.*" />
+			</manifest>
+		</jar>
+		<echo>Jar is created</echo>
+		<echo message="${build.datetime}" />
+	</target>
+
+	<target name="war" depends="jar" description="Preparing war file">
+		<war destfile="${dist.dir}/${ant.project.name}.war" webxml="${WebContent.dir}/WEB-INF/web.xml">
+			<fileset dir="${WebContent.dir}">
+				<include name="**/*.jsp" />
+				<include name="**/*.html" />
+				<include name="**/*.css" />
+				<include name="**/*.gif" />
+				<include name="**/*.jpg" />
+				<exclude name="**/*.png" />
+				<include name="**/*.js" />
+				<include name="**/*.txt" />
+				<exclude name="**/*.properties" />
+				
+			</fileset>
+
+			<lib dir="${lib.dir}">
+				<include name="**/*.jar" />
+			</lib>
+			<classes dir="${build.dir}" />
+			<manifest>
+				<attribute name="Main-Class" value="com.*.*" />
+			</manifest>
+		</war>
+		<echo>War is created</echo>
+		<echo message="${build.datetime}" />
+	</target>
+
+	<!-- Junit configurations -->
+	<!-- 
+	<target name="run-tests" depends="war">
+		<junit printsummary="yes" haltonfailure="no" showoutput="yes">
+			<classpath>
+				<pathelement path="${build.dir}" />
+				<fileset dir="${WebContent.dir}/WEB-INF/lib">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+
+			<batchtest fork="yes" todir="${reports.dir}">
+				<formatter type="xml" />
+				<fileset dir="${src.dir}">
+					<include name="**/*Test*.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+		<echo message="run-tests is done" />
+		<echo message="${build.datetime}" />
+	</target>
+     -->
+	<!-- Junit test reports configurations-->
+	<!-- <target name="test" depends="run-tests">
+		<junitreport todir="${reports.dir}">
+			<fileset dir="${reports.dir}">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report format="noframes" todir="${htmlreports.dir}\html\" />
+		</junitreport>
+		<echo message="test target is done" />
+		<echo message="${build.datetime}" />
+	</target>
+
+-->
+	<!-- cobetura code coverage configurations -->
+	<target name="instrument" depends="prepare,compile,jar,war">
+		<if>
+			<equals arg1="${test.coverage}" arg2="true" />
+			<then>
+				<!--	Remove the coverage data file and any old instrumentation. 	-->
+				<delete file="cobertura.ser" />
+				<delete dir="${instrumented.dir}" />
+				<!--Instrument the application classes, writing the instrumented classes into ${build.instrumented.dir}.	-->
+				<cobertura-instrument todir="${instrumented.dir}" maxmemory="${covertura.maxmemory}">
+					<!--The following line causes instrument to ignore any source line containing a reference to log4j, for the purposes of coverage reporting.	-->
+					<ignore regex="org.apache.log4j.*" />
+
+					<fileset dir="${build.dir}">
+						<include name="**/*.class" />
+						<exclude name="**/*Test.class" />
+					</fileset>
+				</cobertura-instrument>
+			</then>
+		</if>
+		<echo message="Instrument is done" />
+		<echo message="${build.datetime}" />
+	</target>
+	
+	<!-- Junit configurations -->
+		<target name="test" depends="prepare,compile">
+			<junit printsummary="yes" haltonfailure="no" showoutput="yes" fork="yes" dir="${basedir}" failureProperty="test.failed">
+				<!--
+					Note the classpath order: instrumented classes are before the
+					original (uninstrumented) classes.  This is important.
+				-->
+				<classpath location="${instrumented.dir}" />
+				<classpath location="${build.dir}" />
+
+				<!--
+					The instrumented classes reference classes used by the
+					Cobertura runtime, so Cobertura and its dependencies
+					must be on your classpath.
+				-->
+				<classpath refid="cobertura.classpath" />
+				<formatter type="xml" />
+				<test name="${testcase}" todir="${reports.dir}" if="testcase" />
+				<batchtest todir="${reports.dir}" unless="testcase">
+					<fileset dir="${src.dir}">
+						<include name="**/*Test.java" />
+					</fileset>
+				</batchtest>
+			</junit>
+
+			<junitreport todir="${reports.dir}">
+				<fileset dir="${reports.dir}">
+					<include name="TEST-*.xml" />
+				</fileset>
+				<report format="frames" todir="${htmlreports.dir}" />
+			</junitreport>
+		</target>
+	
+		<target name="coverage-check">
+			<cobertura-check branchrate="34" totallinerate="100" />
+		</target>
+
+		<target name="coverage-reports" depends="coverage-xml-report,coverage-html-report" />
+
+		<target name="coverage-xml-report" depends="prepare">
+			<if>
+				<equals arg1="${test.coverage}" arg2="true" />
+				<then>
+					<cobertura-report srcdir="**/${src.dir}" destdir="${coverage.report.xml.dir}" format="xml" maxmemory="${covertura.maxmemory}" />
+				</then>
+			</if>
+			<echo message="coverage-xml-report is done" />
+			<echo message="${build.datetime}" />
+		</target>
+
+		<target name="coverage-html-report" depends="prepare">
+			<if>
+				<equals arg1="${test.coverage}" arg2="true" />
+				<then>
+					<cobertura-report destdir="${coverage.report.html.dir}" maxmemory="${covertura.maxmemory}">
+						<fileset dir="${src.dir}">
+							<include name="**/*.java" />
+						</fileset>
+					</cobertura-report>
+				</then>
+			</if>
+			<echo message="coverage-html-report is done" />
+			<echo message="${build.datetime}" />
+		</target>
+		<target name="coverage" depends="compile,instrument,test,coverage-reports" description="Compile, instrument ourself, run the tests and generate JUnit and coverage reports." />
+		<!-- End of cobetura code coverage configurations -->
+
+	</project>
+
+	<!--
+<target name="docs" depends="init" description="Javadocs over API sources">
+        	
+		<echo message="Creating javadocs for DataModel" />
+
+		<echo message="Classpath : ${build.root}/${classes.dir}" />
+		<echo message="DestDir : ${build.root}/${doc.dir}" />
+		<echo message="SourceDir : ${build.root}\api" />
+
+		<delete dir="${build.root}/javadoc.api" />
+		<mkdir dir = "${build.root}/javadoc.api" />
+
+		<javadoc  
+		author="false" 
+		classpath="${build.root}/${classes.dir}" 
+		destdir="${build.root}\javadoc.api" 
+		doctitle="XBRL PROCESSING ENGINE API" 
+		nodeprecated="true" 
+		nodeprecatedlist="true" 
+		noindex="false" 
+		nonavbar="false" 
+		notree="false" 
+		source="1.5" 
+		access="public" 
+		splitindex="true" 
+		use="true" 
+		windowtitle="XBRL PROCESSING ENGINE API" 
+		version="false" 
+		> 
+		    <fileset dir="${build.root}\api" defaultexcludes="yes">
+		      <include name="**"/>
+		      <exclude name="*.txt"/>
+		      <exclude name="*.txt"/>
+		      <exclude name="*.html"/>
+		      <exclude name="**/native/**"/>  
+		    </fileset>
+		    <fileset dir="${build.root}\src" defaultexcludes="yes">
+	   		     what classes are included in javadoc 
+    		    <include name="**/Xbrl.java"/>
+		        <include name="**/XbrlDimensionQuery.java"/>
+		        <include name="**/XbrlDimensionQueryException.java"/>
+		        <include name="**/XbrlInstanceEditor.java"/>
+		        <include name="**/XbrlQuery.java"/>
+		        <include name="**/XbrlQueryException.java"/>
+		    </fileset>
+			<fileset dir="${build.root}\common\src" defaultexcludes="yes">
+			   what classes that included in javadoc
+			    <include name="**/Configuration.java"/>
+			</fileset>
+			<fileset dir="${build.root}\validation\formula\src" defaultexcludes="yes">
+			 what classes that included in javadoc 
+				 <include name="**/Severity.java"/> 
+				<include name="**/IAssertionResult.java"/>
+				<include name="**/IFormulaResult.java"/>
+				<include name="**/FormulaConfiguration.java"/>
+			</fileset>
+			<fileset dir="${build.root}\domain\src" defaultexcludes="yes">
+				 what classes that included in javadoc
+				<include name="**/Severity.java"/> 
+			</fileset>
+			<fileset dir="${build.root}\domain\xbrl21Domain\dts\src" defaultexcludes="yes">
+				what classes that included in javadoc 
+				<include name="**/HypercubeHelper.java"/>
+			</fileset>
+		  
+		  </javadoc>
+	</target>
+
+
+-->

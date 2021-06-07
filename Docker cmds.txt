@@ -1,0 +1,131 @@
+docker version
+docker --version
+docker -v
+docker info
+docker images
+docker search <imagename>
+docker pull <imagename>
+docker run -it ubuntu    => creating container
+apt update -y
+apt install git -y
+ctrl+pq -> exit container without stop.
+docker ps -> running container
+docker exec -it <containerID> /bin/bash   => login to the container
+docker commit -m "hello docker"  <containerID>  git_ubuntu     => create your own image
+docker images
+docker run -it git_ubuntu
+docker ps 
+docker ps -a   => stoped
+
+docker pull markonda/git_java:v1
+docker commit -m "hello docker" 5114d2a1631b git_ubuntu
+sudo docker tag git_ubuntu markonda/git_ubuntu:v1
+docker images
+
+docker tag <imagename> markonda/markgit_ubuntu:v1
+docker login
+docker push <imagename>
+sudo docker push markonda/git_ubuntu:v1
+docker images
+
+
+Markonda Reddy8:45 PM
+https://docs.docker.com/engine/reference/commandline/rm/
+Markonda Reddy9:25 PM
+Dockerfile keywords
+===================
+
+FROM
+
+MAINTAINER
+
+COPY
+
+ADD
+
+RUN
+
+CMD
+
+ENTRYPOINT
+
+WORKDIR
+
+ENV
+
+EXPOSE
+
+USER
+
+VOLUME
+
+LABEL
+
+ARG
+
+
+
+FROM --> FROM indicates the image base image which we are using to build our own image.
+
+
+Syntax: 
+FROM  <ImageName>
+
+Ex: FROM ubuntu
+
+Ex:
+
+FROM tomcat:8.0.20-jre8(Software)
+
+FROM openjdk:8-alpine
+
+
+MAINTAINER --> It's will be used as commnets to describe author/owner who is maintaning docker file.
+
+MAINTAINER MithunTech <devopstrainingblr@gmail.com>
+
+
+COP
+COPY --> Using COPY we can copy files/folders to the image. Files/Folders will be copied while creating an image.
+It will copy local files from host server(docker server)from where we are building image to the image while creating a image.
+
+SYTNAX:
+======
+COPY <source>                 <destination> 
+      ServerFile/FolderPath   PathInsideImage
+EX:
+COPY target/java-web-app.war /usr/local/tomcat/webapps/java-web-app.war
+
+# Below also valid it will copy all the files/folder from HOST Machine curre
+
+
+
+
+
+
+FROM ubuntu
+MAINTAINER markonda<markonda@gmail.com>
+RUN apt-get update -y
+RUN apt install git -y
+RUN mkdir test
+COPY sample.txt /tmp
+CMD echo "Welcome to Dockerfile"
+CMD echo "Welcome to CMD"
+CMD echo "Welcome to devops"
+Markonda Reddy9:21 PM
+ENTRYPOINT ["echo", "Hello"]
+Markonda Reddy9:31 PM
+ENTRYPOINT ["/bin/ping","-c","3"]
+
+
+
+
+
+
+FROM ubuntu
+MAINTAINER markonda<markonda@gmail.com>
+WORKDIR /tmp/
+RUN apt-get update -y
+COPY sample.txt /tmp
+ADD https://apachemirror.wuchna.com//ant/binaries/apache-ant-1.9.15-bin.tar.gz /tmp
+RUN tar -xvzf apache-ant-1.9.15-bin.tar.gz
